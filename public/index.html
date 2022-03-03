@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Factive Experiment</title>
+        <script src="./jspsych/jspsych.js"></script>
+        <script src="./jspsych/plugin-html-keyboard-response.js"></script>
+        <script src="./jspsych/plugin-video-keyboard-response.js"></script>
+        <script src="./jspsych/plugin-video-button-response.js"></script>
+        <script src="./jspsych/plugin-survey-html-form.js"></script>
+        <script src="./jspsych/plugin-html-button-response.js"></script>
+        <script src="./jspsych/plugin-survey-multi-choice.js"></script>
+        <script src="./jspsych/plugin-survey-multi-select.js"></script>
+        <script src="./jspsych/plugin-preload.js"></script>
+        <script src="./jspsych/plugin-survey-text.js"></script>
+        <script src="./jspsych/plugin-video-button-response.js"></script>
+        <script src="./filler.js"></script>
+        <link href="jspsych/jspsych.css" rel="stylesheet" type="text/css"/>
+    </head>
+    <body>
+    <script>
+        /* This function here will allow us to send the data from the completed survey to the server */
+        function save_data(data) {
+            url = location + "data"
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", url, true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.send(JSON.stringify({
+                data
+            }));
+        }
+        /* This will allow us to use jspsych moving forward, and it also configures certain display settings, 
+        as well as what will happen when the survey is completed...
+        */
+        var responses = {}
+        const jsPsych = initJsPsych({
+            show_progress_bar: true,
+            // override_safe_mode:true, 
+            on_finish: function(){
+                //display survery data 
+                console.log(db);
+                save_data(db);
+                document.write('<p style="text-align:center"> You have completed the survey. Thank you for your cooperation. Your survey code is: "6B6B20F9".</p>');
+            }
+        }); 
+
+        var timeline = [];
+         /* Opening instructions */
+
+        /* Consent form for the study*/
+        var consent = {
+            type: jsPsychHtmlButtonResponse,
+            stimulus: "<DIV align='left'><div>&nbsp;</div><div>Please consider this information carefully before deciding whether to participate in this research.</div><div>&nbsp;\<div>The purpose of this research is to examine which factors influence social judgment and decision-</div><div>making.You will be asked to make judgements about individuals and actions in social scenarios.</div><div>We are simply interested in your judgement. The study will take less than 1 hour to complete,</div><div>and you will receive less than $20 on Prolific. Your compensation and time</div><div>commitment are specified in the study description. There are no anticipated risks associated with</div><div>participating in this study. The effects of participating should be comparable to those you would</div><div>ordinarily experience from viewing a computer monitor and using a mouse or keyboard for a</div><div>similar amount of time. At the end of the study, we will provide an explanation of the questions</div><div>that motivate this line of research and will describe the potential implications.</div><div>&nbsp;</div><div>Your participation in this study is completely voluntary and you may refuse to participate or you</div><div>may choose to withdraw at any time without penalty or loss of benefits to you which are</div><div>otherwise entitled. Your participation in this study will remain confidential. No personally</div><div>identifiable information will be associated with your data. Also, all analyses of the data will be</div><div>averaged across all the participants, so your individual responses will never be specifically</div><div>analyzed.</div><div>&nbsp;</div><div>If you have questions or concerns about your participation or payment, or want to request a</div><div>summary of research findings, please contact Dr. Jonathan Phillips at</div><div><a href=mailto:Jonathan.S.Phillips@dartmouth.edu>Jonathan.S.Phillips@dartmouth.edu</a>.</div><div>&nbsp;</div><div>Please save a copy of this form for your records.</div><div>&nbsp;</div></DIV><div>Agreement:</div><DIV align='left'><div>The nature and purpose of this research have been sufficiently explained and I agree to</div><div>participate in this study. I understand that I am free to withdraw at any time without incurring</div><div>any penalty. Please consent by clicking the button below to continue. Otherwise, please exit the</div><div>study at any time.</div><div>&nbsp;</div></DIV>",
+            choices: ['Submit'],
+            //this specifies the way in which the data will be configured inside jspsych data variable...
+            data:{
+                internal_type: "consent"
+            },
+        };
+        timeline.push(consent);
+        /* Collection of participant info*/
+        var participant_info = {
+            type: jsPsychSurveyText,
+            preamble: 'Please provide us with some demographic information.',
+            questions: [
+                {prompt: "How old are you?", placeholder: 'ex: 34',required: true}, 
+                {prompt: "Which is your dominant hand (e.g.,Right, Left, Ambidextrous)?", required:true}, 
+                {prompt: "What is your native language?", required: true}, 
+                {prompt: "What is your nationality?", required: true}, 
+                {prompt: "In which country do you live?", required: true},
+                {prompt: "What is your gender (e.g., Male, Female, Other)?", required:true}, 
+                {prompt: '<p style="width:500px;">What is your education level (e.g., Grade/elementary school, High school, Some college or university, College or university degree, Graduate degree, Masters, PhD)<p>?', required: true},
+                {prompt: "Prolific Worker ID", required: true}
+            ],
+            data:{
+                internal_type: "participant_info"
+            },
+            on_finish: function(data){
+                responses["age"] = data.response['Q0'];
+                responses["handedness"] = data.response["Q1"];
+                responses["language"] = data.response["Q2"];
+                responses["nationality"] = data.response["Q3"];
+                responses["residence"] = data.response["Q4"];
+                responses["gender"] = data.response["Q5"];
+                responses["education"] = data.response["Q6"];
+                responses["id"] = data.response["Q7"];
+            },
+        };
+        timeline.push(participant_info);
+        var filler_questions = {"pirate":pirate_filler, "school":school_filler, "spy":spy_filler};
+        console.log(filler_questions);
+
+        // function handleFiller(filler, timeline, main){
+        //     questions = [];
+        //     for (var i = 0; i < 2; i++){
+        //         questions.push(filler[parseInt(Math.random()*filler.length)]);
+        //     }
+        //     questions.push(main)
+        // }
+        // var pirate_videos = ["./videos/pirate/EI.mp4", "./videos/pirate/FB.mp4", "./videos/pirate/G.mp4", "./videos/pirate/NI.mp4", "./videos/pirate/SI.mp4", "./videos/pirate/TB.mp4"];
+        // var school_videos = ["./videos/school/EI.mp4", "./videos/school/FB.mp4", "./videos/school/G.mp4", "./videos/school/NI.mp4", "./videos/school/SI.mp4", "./videos/school/TB.mp4"];
+        // var spy_videos = ["./videos/spy/EI.mp4", "./videos/spy/FB.mp4", "./videos/spy/G.mp4", "./videos/spy/NI.mp4", "./videos/spy/SI.mp4", "./videos/spy/TB.mp4"];
+        
+        var context = ["spy", "pirate", "school"];
+        var conditions = ["EI", "FB", "G", "NI", "SI", "TB"];
+
+        // pirate_timeline = []
+        // for (key in school_filler){
+        //     pirate_timeline.push({stimulus:key})
+        // }
+        // var pirate_q_trials = {
+        //     type: jsPsychHtmlButtonResponse, 
+        //     choices: ["Yes", "No"],
+        //     timeline: pirate_timeline,
+        // }
+        // console.log(pirate_q_trials);
+        var video_names = []
+       
+        for (c of context){
+            for (cond of conditions){
+                video_names.push(`./videos/${c}/${cond}.mp4`);
+            }
+        }
+        //quick context mapping
+        cmap = {};
+        for (c of context){
+            for (cond of conditions){
+                cmap[`./videos/${c}/${cond}.mp4`] = [c, cond];
+            }
+        }
+         /* credit to https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array*/
+         function shuffle(array) {
+            let currentIndex = array.length,  randomIndex;
+            // While there remain elements to shuffle...
+            while (currentIndex != 0) {
+                // Pick a remaining element...
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex--;
+                // And swap it with the current element.
+                [array[currentIndex], array[randomIndex]] = [
+                array[randomIndex], array[currentIndex]];
+            }
+            return array;
+        }
+
+        //shuffle order videos is displayed
+        video_names = shuffle(video_names);
+        console.log(video_names);
+       
+        var preload = {
+            type: jsPsychPreload,
+            video: video_names,
+        }
+        video_names = [video_names[0]];
+        
+        // this will store the most recent video_name
+        var most_recent = ["shshs"];
+
+        // db[i] = [context, condition, question, response, correct_response, rt]  
+        var db = [];
+
+        function create_video_trials(video_names, timeline){
+            for (title of video_names){
+                //this will be the timeline that will contain the video-question sequence
+                timeline2 = [];
+                var video = {
+                    type: jsPsychVideoButtonResponse, 
+                    controls: true, 
+                    stimulus: [title],
+                    prompt: '<h5> Please watch the video carefully and hit continue once you are done. </h5>',
+                    choices: ['Continue'],
+                    on_finish: function(data){
+                        console.log(db);
+                        console.log(cmap[data.stimulus[0]]);
+                        most_recent = cmap[data.stimulus[0]];
+                    }
+                }
+                timeline2.push(video);
+                /* non-filler, target questions here */
+                var target1 = {
+                    type: jsPsychHtmlButtonResponse, 
+                    stimulus: "Does Dr. C know where Billy is?",
+                    choices: ["Yes", "No"], 
+                    on_finish: function(data){
+                        // 0 == yes, 1 == no
+                        console.log(data);
+                        db.push([responses["id"], most_recent[0], most_recent[1], data.stimulus, data.response, null, data.rt]);
+                    }
+                }
+                var target2 = {
+                    type: jsPsychHtmlButtonResponse, 
+                    stimulus: "Does [student] know where Billy is?", 
+                    choices: ["Yes", "No"],
+                    on_finish: function(data){
+                        db.push([responses["id"], most_recent[0], most_recent[1], data.stimulus, data.response, null, data.rt]);
+
+                    }
+                }
+                /* depending on the condition, we will ask different filler. plus, these question need to be in random order */
+                var c = cmap[title][0];
+                if(c == "pirate"){
+                    t = [];
+                    for (key in pirate_filler){
+                        var question = {
+                            type: jsPsychHtmlButtonResponse, 
+                            choices: ["Yes", "No"],
+                            stimulus: key,
+                            on_finish: function(data){
+                                db.push([responses["id"], most_recent[0], most_recent[1], data.stimulus, data.response, pirate_filler[data.stimulus], data.rt]);
+                            }
+                        }
+                        t.push(question);
+                    }
+                    t.push(target1);
+                    t.push(target2);
+                    //randomize order
+                    t = shuffle(t);
+                    //push all of these to the real timeline
+                    for(question of t){
+                        timeline2.push(question);
+                    }
+                }
+                else if(c == "spy"){
+                    t = [];
+                    for (key in spy_filler){
+                        var question = {
+                            type: jsPsychHtmlButtonResponse, 
+                            choices: ["Yes", "No"],
+                            stimulus: key,
+                            on_finish: function(data){
+                                db.push([responses["id"], most_recent[0], most_recent[1], data.stimulus, data.response, spy_filler[data.stimulus], data.rt]);
+                            }
+                        }
+                        t.push(question);
+                    }
+                    t.push(target1);
+                    t.push(target2);
+                    //randomize order
+                    t = shuffle(t);
+                    //push all of these to the real timeline
+                    for(question of t){
+                        timeline2.push(question);
+                    }
+                }
+                else if(c == "school"){
+                    t = [];
+                    for (key in school_filler){
+                        var question = {
+                            type: jsPsychHtmlButtonResponse, 
+                            choices: ["Yes", "No"],
+                            stimulus: key,
+                            on_finish: function(data){
+                                db.push([responses["id"], most_recent[0], most_recent[1], data.stimulus, data.response, school_filler[data.stimulus], data.rt]);
+                            }
+                        }
+                        t.push(question);
+                    }
+                    t.push(target1);
+                    t.push(target2);
+                    //randomize order
+                    t = shuffle(t);
+                    //push all of these to the real timeline
+                    for(question of t){
+                        timeline2.push(question);
+                    }
+                }
+                //now we create new combined variable 
+                const video_question = {
+                    timeline:timeline2,
+                    on_finish:function(data){
+                        // console.log(data);
+                    }
+                }
+                //push this to main timeline
+                timeline.push(video_question);
+            }
+        }
+        create_video_trials(video_names, timeline);
+        // for (const title of video_names){
+        //     var video = {
+        //         type: jsPsychVideoButtonResponse, 
+        //         controls: true, 
+        //         stimulus: [title],
+        //         prompt: '<h5> Please watch the video carefully and hit continue once you are done. </h5>',
+        //         choices: ['Continue']
+        //     }
+            // var question1 = {
+            //     type: jsPsychHtmlButtonResponse, 
+            //     stimulus: "Does Dr. C know where Billy is?",
+            //     choices: ["Yes", "No"]
+            // }
+            // var question2 = {
+            //     type: jsPsychHtmlButtonResponse, 
+            //     stimulus: "Does [student] know where Billy is?", 
+            //     choices: ["Yes", "No"]
+            // }
+        //     timeline.push(video);
+        //     timeline.push(question1);
+        //     timeline.push(question2);
+        // }
+        
+       
+       
+        jsPsych.run(timeline);
+
+    </script>
+    </body>
+</html>
