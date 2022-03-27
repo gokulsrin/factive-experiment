@@ -15,6 +15,7 @@
         <script src="./jspsych/plugin-survey-text.js"></script>
         <script src="./jspsych/plugin-video-button-response.js"></script>
         <script src="./filler.js"></script>
+        <script scr="./instructions.js"></script>
         <link href="jspsych/jspsych.css" rel="stylesheet" type="text/css"/>
     </head>
     <body>
@@ -39,7 +40,8 @@
             on_finish: function(){
                 //display survery data 
                 console.log(db);
-                save_data(db);
+                //send both the responses and the data
+                save_data([responses, db]);
                 document.write('<p style="text-align:center"> You have completed the survey. Thank you for your cooperation. Your survey code is: "6B6B20F9".</p>');
             }
         }); 
@@ -103,7 +105,33 @@
         
         var context = ["spy", "pirate", "school"];
         var conditions = ["EI", "FB", "G", "NI", "SI", "TB"];
+        var condition_qs = {
+            "school":{
+                "FB": {"Does Dr. C know where Billy is?":"N", "Does Jane know where Billy is?":"N"}, 
+                "SI":{"Does Dr. C know where Billy is?":"N", "Does Jane know where Billy is?":"N"}, 
+                "EI":{"Does Dr. C know where Billy is?":"Y", "Does Jane know where Billy is?":"N"}, 
+                "NI":{"Does Dr. C know where Billy is?":"N", "Does Jane know where Billy is?":"N"}, 
+                "TB":{"Does Dr. C know where Billy is?":"Y", "Does Jane know where Billy is?":"N"}, 
+                "G":{"Does Dr. C know where Billy is?":"Y", "Does Jane know where Billy is?":"Y"}, 
+            }, 
+            "spy":{
+                "FB": {"Does Captain know where Maria is?":"N", "Does Harry know where Maria is?":"N"}, 
+                "SI":{"Does Captain know where Maria is?":"N", "Does Harry know where Maria is?":"N"},
+                "EI":{"Does Captain know where Maria is?":"Y", "Does Harry know where Maria is?":"N"},
+                "NI":{"Does Captain know where Maria is?":"N", "Does Harry know where Maria is?":"N"},
+                "TB":{"Does Captain know where Maria is?":"Y", "Does Harry know where Maria is?":"N"},
+                "G":{"Does Captain know where Maria is?":"Y", "Does Harry know where Maria is?":"Y"},
+            }, 
+            "pirate":{
+                "FB":{"Does Lieutenant Jack know where Commander Greenville is?":"N", "Does Major Bryant know where Commander Greenville is?":"N"}, 
+                "SI":{"Does Lieutenant Jack know where Commander Greenville is?":"N", "Does Major Bryant know where Commander Greenville is?":"N"}, 
+                "EI":{"Does Lieutenant Jack know where Commander Greenville is?":"N", "Does Major Bryant know where Commander Greenville is?":"Y"}, 
+                "NI":{"Does Lieutenant Jack know where Commander Greenville is?":"N", "Does Major Bryant know where Commander Greenville is?":"N"}, 
+                "TB":{"Does Lieutenant Jack know where Commander Greenville is?":"Y", "Does Major Bryant know where Commander Greenville is?":"Y"}, 
+                "G":{"Does Lieutenant Jack know where Commander Greenville is?":"Y", "Does Major Bryant know where Commander Greenville is?":"Y"}, 
+            }
 
+        }   
         // pirate_timeline = []
         // for (key in school_filler){
         //     pirate_timeline.push({stimulus:key})
@@ -163,6 +191,14 @@
             for (title of video_names){
                 //this will be the timeline that will contain the video-question sequence
                 timeline2 = [];
+                //prevideo instructions 
+                var vinstruct = {
+                    type: jsPsychHtmlButtonResponse,
+                    stimulus: video_instructions,
+                    choices: ['Continue'],
+                    // prompt: "<p>What color is the ink?</p>",
+                }
+                timeline2.push(vinstruct);
                 var video = {
                     type: jsPsychVideoButtonResponse, 
                     controls: true, 
@@ -172,34 +208,32 @@
                     on_finish: function(data){
                         console.log(db);
                         console.log(cmap[data.stimulus[0]]);
-                        most_recent = cmap[data.stimulus[0]];
+                        most_recent = cmap[data.stimulus[0]]; //most recent allows me to format the sql row such that I know the context and condition of every entry
                     }
                 }
                 timeline2.push(video);
-                /* non-filler, target questions here */
-                var target1 = {
-                    type: jsPsychHtmlButtonResponse, 
-                    stimulus: "Does Dr. C know where Billy is?",
-                    choices: ["Yes", "No"], 
-                    on_finish: function(data){
-                        // 0 == yes, 1 == no
-                        console.log(data);
-                        db.push([responses["id"], most_recent[0], most_recent[1], data.stimulus, data.response, null, data.rt]);
+                /* pushing the non-filler, target questions here into the array that will later be shuffled */
+                t = []; //array that will contain all the target + context specific filler questions
+                for (var text in condition_qs[cmap[title][0]][cmap[title][1]]) {
+                    console.log(text);
+                    var correct_ans = condition_qs[cmap[title][0]][cmap[title][1]][text];
+                    console.log(correct_ans);
+                    var target = {
+                        type: jsPsychHtmlButtonResponse, 
+                        stimulus: text,
+                        choices: ["Yes", "No"], 
+                        on_finish: function(data){
+                            // 0 == yes, 1 == no
+                            console.log(data);
+                            db.push([responses["id"], most_recent[0], most_recent[1], data.stimulus, data.response, correct_ans, data.rt]);
+                        }
                     }
+                    t.push(target);
                 }
-                var target2 = {
-                    type: jsPsychHtmlButtonResponse, 
-                    stimulus: "Does [student] know where Billy is?", 
-                    choices: ["Yes", "No"],
-                    on_finish: function(data){
-                        db.push([responses["id"], most_recent[0], most_recent[1], data.stimulus, data.response, null, data.rt]);
-
-                    }
-                }
+               
                 /* depending on the condition, we will ask different filler. plus, these question need to be in random order */
                 var c = cmap[title][0];
                 if(c == "pirate"){
-                    t = [];
                     for (key in pirate_filler){
                         var question = {
                             type: jsPsychHtmlButtonResponse, 
@@ -211,8 +245,6 @@
                         }
                         t.push(question);
                     }
-                    t.push(target1);
-                    t.push(target2);
                     //randomize order
                     t = shuffle(t);
                     //push all of these to the real timeline
@@ -221,7 +253,6 @@
                     }
                 }
                 else if(c == "spy"){
-                    t = [];
                     for (key in spy_filler){
                         var question = {
                             type: jsPsychHtmlButtonResponse, 
@@ -233,8 +264,7 @@
                         }
                         t.push(question);
                     }
-                    t.push(target1);
-                    t.push(target2);
+                  
                     //randomize order
                     t = shuffle(t);
                     //push all of these to the real timeline
@@ -243,7 +273,6 @@
                     }
                 }
                 else if(c == "school"){
-                    t = [];
                     for (key in school_filler){
                         var question = {
                             type: jsPsychHtmlButtonResponse, 
@@ -255,8 +284,7 @@
                         }
                         t.push(question);
                     }
-                    t.push(target1);
-                    t.push(target2);
+           
                     //randomize order
                     t = shuffle(t);
                     //push all of these to the real timeline
@@ -264,7 +292,7 @@
                         timeline2.push(question);
                     }
                 }
-                //now we create new combined variable 
+                //now we create new combined variable with the combined timeline
                 const video_question = {
                     timeline:timeline2,
                     on_finish:function(data){
@@ -276,31 +304,7 @@
             }
         }
         create_video_trials(video_names, timeline);
-        // for (const title of video_names){
-        //     var video = {
-        //         type: jsPsychVideoButtonResponse, 
-        //         controls: true, 
-        //         stimulus: [title],
-        //         prompt: '<h5> Please watch the video carefully and hit continue once you are done. </h5>',
-        //         choices: ['Continue']
-        //     }
-            // var question1 = {
-            //     type: jsPsychHtmlButtonResponse, 
-            //     stimulus: "Does Dr. C know where Billy is?",
-            //     choices: ["Yes", "No"]
-            // }
-            // var question2 = {
-            //     type: jsPsychHtmlButtonResponse, 
-            //     stimulus: "Does [student] know where Billy is?", 
-            //     choices: ["Yes", "No"]
-            // }
-        //     timeline.push(video);
-        //     timeline.push(question1);
-        //     timeline.push(question2);
-        // }
-        
-       
-       
+          
         jsPsych.run(timeline);
 
     </script>
