@@ -7,15 +7,16 @@
         <script src="./jspsych/plugin-html-keyboard-response.js"></script>
         <script src="./jspsych/plugin-video-keyboard-response.js"></script>
         <script src="./jspsych/plugin-video-button-response.js"></script>
+        <script src="./jspsych/plugin-image-button-response.js"></script>
         <script src="./jspsych/plugin-survey-html-form.js"></script>
         <script src="./jspsych/plugin-html-button-response.js"></script>
+        <script src="./jspsych/plugin-html-keyboard-response.js"></script>
         <script src="./jspsych/plugin-survey-multi-choice.js"></script>
         <script src="./jspsych/plugin-survey-multi-select.js"></script>
         <script src="./jspsych/plugin-preload.js"></script>
         <script src="./jspsych/plugin-survey-text.js"></script>
-        <script src="./jspsych/plugin-video-button-response.js"></script>
         <script src="./filler.js"></script>
-        <script scr="./instructions.js"></script>
+        <script src="./instruction/instruction.js"></script>
         <link href="jspsych/jspsych.css" rel="stylesheet" type="text/css"/>
     </head>
     <body>
@@ -60,6 +61,70 @@
             },
         };
         timeline.push(consent);
+        /* alternate drop down participant info 
+        - one of the problems here is that this form does not force participants to respond. 
+        */
+        var feedback_demographics = {
+            type: jsPsychSurveyHtmlForm,
+            html: '<div style="max-width:700px; text-align:center;"> <p>' +
+                'What factors influenced how you decided to respond? Do you' +
+                ' have any questions or comments regarding the experiment?' +
+                '</p> <textarea name="feedback" cols="40" rows="6"' +
+                ' "autofocus"></textarea> <p> Please provide the following' +
+                ' information to complete the study. </p> <div style="text-' +
+                'align:center;"> <div style="text-align:left; display:' +
+                'inline-block; margin-right:20px; line-height:1.8em;"> <ol>' +
+                    '<li>Age:</li> <br><br>' +
+                    '<li>Gender:</li> <br><br>' +
+                    '<li>Race:</li> <br><br><br><br><br><br>' +
+                    '<li>Ethnicity:</li>' +
+                '</ol> </div>' +
+                '<div style="text-align:left; display: inline-block;' +
+                ' line-height:1.8em;">' +
+                    // age text box
+                    '<input name="age" type="number"  min="18" max="100" /> <br> <br>' +
+                    // gender options
+                    '<input name="gender" type="radio" id="female" value=' +
+                        '"Female" /> <label for="female"> Female </label>' +
+                    '<input name="gender" type="radio" id="male" value=' +
+                        '"Male" /> <label for="male"> Male </label>' +
+                    '<input name="gender" type="radio" id="nonbinary" value=' +
+                        '"Non-binary" /> <label for="nonbinary"> Non-binary </label> <br>' +
+                    '<input name="gender" type="radio" id="other_gender" value=' +
+                        '"other_gender" /> <label for="other_gender"> Other: <input' +
+                        ' type="text" name="other_gender" /> </label> <br><br>' +
+                    // race options
+                    '<input name="race" type="radio" id="white" value=' +
+                        '"White" /> <label for="white"> White </label> <br>' +
+                    '<input name="race" type="radio" id="black" value=' +
+                        '"Black/African American" /> <label for="black">' +
+                        ' Black/African American </label> <br>' +
+                    '<input name="race" type="radio" id="am_ind" value=' +
+                        '"American Indian/Alaska Native" /> <label for="am_ind">' +
+                        ' American Indian/Alaska Native </label> <br>' +
+                    '<input name="race" type="radio" id="asian" value=' +
+                        '"Asian" /> <label for="asian"> Asian </label> <br>' +
+                    '<input name="race" type="radio" id="pac_isl" value=' +
+                        '"Native Hawaiian/Pacific Islander" /> <label for="pac_isl">' +
+                        ' Native Hawaiian/Pacific Islander </label> <br>' +
+                    '<input name="race" type="radio" id="multi" value=' +
+                        '"Multiracial" /> <label for="multi"> Multiracial/Mixed </label> <br>' +
+                    '<input name="race" type="radio" id="other_race" value="other_race" />' +
+                        '<label for="other_race"> Other: <input type="text"' +
+                        'name="other_race" /> </label> <br><br>' +
+                    // ethnicity options
+                    '<input name="ethnicity" type="radio" id="hisp" value=' +
+                        '"Hispanic" /> <label for="hisp"> Hispanic </label>' +
+                    '<input name="ethnicity" type="radio" id="nonhisp" value=' +
+                        '"Non-Hispanic" /> <label for="nonhisp"> Non-Hispanic' +
+                        ' </label>' +
+                '</div> </div>', 
+                on_finish: function(data){
+                    console.log(data);
+                },
+        }
+        timeline.push(feedback_demographics);
+
         /* Collection of participant info*/
         var participant_info = {
             type: jsPsychSurveyText,
@@ -88,21 +153,124 @@
                 responses["id"] = data.response["Q7"];
             },
         };
-        timeline.push(participant_info);
+        // timeline.push(participant_info);
         var filler_questions = {"pirate":pirate_filler, "school":school_filler, "spy":spy_filler};
         console.log(filler_questions);
 
-        // function handleFiller(filler, timeline, main){
-        //     questions = [];
-        //     for (var i = 0; i < 2; i++){
-        //         questions.push(filler[parseInt(Math.random()*filler.length)]);
-        //     }
-        //     questions.push(main)
+        /* pushing the study description and the practice trial instructions */
+        // var study_description = {
+        //     type: jsPsychHtmlButtonResponse,
+        //     stimulus: study_description, 
+        //     choices: ['Submit'],
+        //     data:{
+        //         internal_type: "study description"
+        //     },
         // }
-        // var pirate_videos = ["./videos/pirate/EI.mp4", "./videos/pirate/FB.mp4", "./videos/pirate/G.mp4", "./videos/pirate/NI.mp4", "./videos/pirate/SI.mp4", "./videos/pirate/TB.mp4"];
-        // var school_videos = ["./videos/school/EI.mp4", "./videos/school/FB.mp4", "./videos/school/G.mp4", "./videos/school/NI.mp4", "./videos/school/SI.mp4", "./videos/school/TB.mp4"];
-        // var spy_videos = ["./videos/spy/EI.mp4", "./videos/spy/FB.mp4", "./videos/spy/G.mp4", "./videos/spy/NI.mp4", "./videos/spy/SI.mp4", "./videos/spy/TB.mp4"];
-        
+        // timeline.push(study_description);
+         // preload the instructional video and other videos - this seems to work fine but may need to be changed... 
+         var preload = {
+            type: jsPsychPreload,
+            auto_preload: true, 
+        }
+        // practice trial instructions
+        var practice_trial_instructions = {
+            type: jsPsychHtmlButtonResponse,
+            stimulus: practice_trial_instructions, 
+            choices: ['Continue'],
+            data:{
+                internal_type: "practice trial instructions"
+            },
+        }
+        timeline.push(practice_trial_instructions);
+
+        var practice_trial_image = {
+            type: jsPsychImageButtonResponse,
+            stimulus: 'instruction/handposition.png',
+            stimulus_height: 500, 
+            maintain_aspect_ratio: true, 
+            // prompt: "Please click continue.",
+            // stimulus: practice_trial_instructions, 
+            choices: ['Continue'],
+            data:{
+                internal_type: "practice trial image"
+            },
+        }
+        timeline.push(practice_trial_image);
+
+        /* Instruction trial 
+            - This will work by providing them some test video video 
+            - asking them to answer the questions correctly, and repeating the questions until they answer correctly 
+        */
+       
+
+        function create_instruction_trial(timeline){
+            // this will be the internal timeline that we use to create this 
+            var timeline2 = [];
+            //add video here 
+            var video = {
+                    type: jsPsychVideoKeyboardResponse, 
+                    controls: true, 
+                    autoplay: false, 
+                    stimulus: ['instruction/trial.mp4'],
+                    prompt: '<h5> Press play when you are ready and watch each video once. Press the spacebar to continue.</h5>',
+                    choices: [" "],
+                    on_finish: function(data){
+                    //    console.log("")
+                    }
+            }
+            timeline2.push(video);
+            //post video instructions 
+            var p_video_instructions = {
+                type: jsPsychHtmlKeyboardResponse,
+                stimulus: post_video_instructions,
+                choices: [' '],
+                    on_finish: function(data){
+                    //    console.log("")
+                },
+            }
+            timeline2.push(p_video_instructions);
+            for (var key in instruction_trial){
+                console.log(key);
+                var trial = {
+                    type: jsPsychHtmlKeyboardResponse,
+                    stimulus: key,
+                    //15 seconds 
+                    trial_duration: 15000, 
+                }
+                var loop_node = {
+                    timeline: [trial],
+                    // this repeats the question if they are wrong
+                    loop_function: function(data){
+                        if(jsPsych.pluginAPI.compareKeys(data.values()[0].response, instruction_trial[key])){
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    }
+                }
+                timeline2.push(loop_node);
+                var fixation = {
+                    type: jsPsychHtmlKeyboardResponse,
+                    stimulus: '<div style="font-size:60px;">+</div>',
+                    choices: "NO_KEYS",
+                    trial_duration: 3000,
+                };
+                timeline2.push(fixation);
+            }
+            const it = {
+                timeline:timeline2,
+            }
+            timeline.push(it);
+        }
+        create_instruction_trial(timeline);
+        /* push post instruction trial script */
+        var pits = {
+            type: jsPsychHtmlButtonResponse, 
+            stimulus: post_instruction_script, 
+            choices: ["Continue"],
+        }
+        timeline.push(pits);
+        /* Doing the prep work for the relevent target question manipulation we will do later */
         var context = ["spy", "pirate", "school"];
         var conditions = ["EI", "FB", "G", "NI", "SI", "TB"];
         var condition_qs = {
@@ -132,18 +300,12 @@
             }
 
         }   
-        // pirate_timeline = []
-        // for (key in school_filler){
-        //     pirate_timeline.push({stimulus:key})
-        // }
-        // var pirate_q_trials = {
-        //     type: jsPsychHtmlButtonResponse, 
-        //     choices: ["Yes", "No"],
-        //     timeline: pirate_timeline,
-        // }
-        // console.log(pirate_q_trials);
+        /* Prep work for pushing the 3 distinct scenarios with 6 different conditions 
+        - so, I have to establish a mapping
+        - create a shuffle algorithm 
+        - and do some other stuff
+         */
         var video_names = []
-       
         for (c of context){
             for (cond of conditions){
                 video_names.push(`./videos/${c}/${cond}.mp4`);
@@ -175,10 +337,6 @@
         video_names = shuffle(video_names);
         console.log(video_names);
        
-        var preload = {
-            type: jsPsychPreload,
-            video: video_names,
-        }
         video_names = [video_names[0]];
         
         // this will store the most recent video_name
@@ -186,7 +344,7 @@
 
         // db[i] = [context, condition, question, response, correct_response, rt]  
         var db = [];
-
+        /* q = yes, p = no */
         function create_video_trials(video_names, timeline){
             for (title of video_names){
                 //this will be the timeline that will contain the video-question sequence
@@ -200,18 +358,30 @@
                 }
                 timeline2.push(vinstruct);
                 var video = {
-                    type: jsPsychVideoButtonResponse, 
+                    type: jsPsychVideoKeyboardResponse, 
+                    autoplay: false, 
                     controls: true, 
                     stimulus: [title],
-                    prompt: '<h5> Please watch the video carefully and hit continue once you are done. </h5>',
-                    choices: ['Continue'],
+                    prompt: '<h5> Please watch the video carefully and press the spacebar to continue. </h5>',
+                    choices: [" "],
                     on_finish: function(data){
+                        console.log(data);
                         console.log(db);
                         console.log(cmap[data.stimulus[0]]);
                         most_recent = cmap[data.stimulus[0]]; //most recent allows me to format the sql row such that I know the context and condition of every entry
                     }
                 }
                 timeline2.push(video);
+                //instructions for post video questions
+                var p_video_instructions = {
+                    type: jsPsychHtmlKeyboardResponse,
+                    stimulus: post_video_instructions,
+                    choices: [' '],
+                        on_finish: function(data){
+                        //    console.log("")
+                    },
+                }
+                timeline2.push(p_video_instructions);
                 /* pushing the non-filler, target questions here into the array that will later be shuffled */
                 t = []; //array that will contain all the target + context specific filler questions
                 for (var text in condition_qs[cmap[title][0]][cmap[title][1]]) {
@@ -219,12 +389,12 @@
                     var correct_ans = condition_qs[cmap[title][0]][cmap[title][1]][text];
                     console.log(correct_ans);
                     var target = {
-                        type: jsPsychHtmlButtonResponse, 
+                        type: jsPsychHtmlKeyboardResponse, 
                         stimulus: text,
-                        choices: ["Yes", "No"], 
+                        choices: ["q", "p"], 
+                        trial_duration: 15000, 
                         on_finish: function(data){
                             // 0 == yes, 1 == no
-                            console.log(data);
                             db.push([responses["id"], most_recent[0], most_recent[1], data.stimulus, data.response, correct_ans, data.rt]);
                         }
                     }
@@ -232,64 +402,123 @@
                 }
                
                 /* depending on the condition, we will ask different filler. plus, these question need to be in random order */
+                /* Apparently we've decided to just add 1 filler - so the point here is to randomly insert 1 filler question */
                 var c = cmap[title][0];
                 if(c == "pirate"){
+                    var questions = [];
+                    //previous version
                     for (key in pirate_filler){
-                        var question = {
-                            type: jsPsychHtmlButtonResponse, 
-                            choices: ["Yes", "No"],
-                            stimulus: key,
-                            on_finish: function(data){
-                                db.push([responses["id"], most_recent[0], most_recent[1], data.stimulus, data.response, pirate_filler[data.stimulus], data.rt]);
-                            }
-                        }
-                        t.push(question);
+                        questions.push(key);
+                        // var question = {
+                        //     type: jsPsychHtmlKeyboardResponse, 
+                        //     choices: ["q", "p"],
+                        //     stimulus: key,
+                        //     on_finish: function(data){
+                        //         db.push([responses["id"], most_recent[0], most_recent[1], data.stimulus, data.response, pirate_filler[data.stimulus], data.rt]);
+                        //     }
+                        // }
+                        // t.push(question);
                     }
+                    // new 
+                    var question = {
+                        type: jsPsychHtmlKeyboardResponse, 
+                        choices: ["p", "q"], 
+                        trial_duration: 15000, 
+                        stimulus: questions[Math.floor(Math.random()*questions.length)],
+                        on_finish: function(data){
+                            db.push([responses["id"], most_recent[0], most_recent[1], data.stimulus, data.response, pirate_filler[data.stimulus], data.rt]);
+                        }
+                    }
+                    t.push(question);
                     //randomize order
                     t = shuffle(t);
                     //push all of these to the real timeline
                     for(question of t){
                         timeline2.push(question);
+                        var fixation = {
+                            type: jsPsychHtmlKeyboardResponse,
+                            stimulus: '<div style="font-size:60px;">+</div>',
+                            choices: "NO_KEYS",
+                            trial_duration: 3000,
+                        };
+                        timeline2.push(fixation);
                     }
                 }
                 else if(c == "spy"){
+                    var questions = []
                     for (key in spy_filler){
-                        var question = {
-                            type: jsPsychHtmlButtonResponse, 
-                            choices: ["Yes", "No"],
-                            stimulus: key,
-                            on_finish: function(data){
-                                db.push([responses["id"], most_recent[0], most_recent[1], data.stimulus, data.response, spy_filler[data.stimulus], data.rt]);
-                            }
-                        }
-                        t.push(question);
+                        questions.push(key);
+                        // var question = {
+                        //     type: jsPsychHtmlKeyboardResponse, 
+                        //     choices: ["q", "p"],
+                        //     stimulus: key,
+                        //     on_finish: function(data){
+                        //         db.push([responses["id"], most_recent[0], most_recent[1], data.stimulus, data.response, spy_filler[data.stimulus], data.rt]);
+                        //     }
+                        // }
+                        // t.push(question);
                     }
-                  
+                    var question = {
+                        type: jsPsychHtmlKeyboardResponse, 
+                        choices: ["p", "q"], 
+                        trial_duration: 15000,
+                        stimulus: questions[Math.floor(Math.random()*questions.length)],
+                        on_finish: function(data){
+                            db.push([responses["id"], most_recent[0], most_recent[1], data.stimulus, data.response, spy_filler[data.stimulus], data.rt]);
+                        }
+                    }
+                    t.push(question);
                     //randomize order
                     t = shuffle(t);
                     //push all of these to the real timeline
                     for(question of t){
                         timeline2.push(question);
+                        var fixation = {
+                            type: jsPsychHtmlKeyboardResponse,
+                            stimulus: '<div style="font-size:60px;">+</div>',
+                            choices: "NO_KEYS",
+                            trial_duration: 3000,
+                        };
+                        timeline2.push(fixation);
                     }
                 }
                 else if(c == "school"){
+                    var questions = []
                     for (key in school_filler){
-                        var question = {
-                            type: jsPsychHtmlButtonResponse, 
-                            choices: ["Yes", "No"],
-                            stimulus: key,
-                            on_finish: function(data){
-                                db.push([responses["id"], most_recent[0], most_recent[1], data.stimulus, data.response, school_filler[data.stimulus], data.rt]);
-                            }
-                        }
-                        t.push(question);
+                        questions.push(key);
+                        // var question = {
+                        //     type: jsPsychHtmlKeyboardResponse, 
+                        //     choices: ["q", "p"],
+                        //     stimulus: key,
+                        //     on_finish: function(data){
+                        //         db.push([responses["id"], most_recent[0], most_recent[1], data.stimulus, data.response, school_filler[data.stimulus], data.rt]);
+                        //     }
+                        // }
+                        // t.push(question);
                     }
-           
+                    var question = {
+                        type: jsPsychHtmlKeyboardResponse, 
+                        choices: ["p", "q"], 
+                        trial_duration: 15000,
+                        stimulus: questions[Math.floor(Math.random()*questions.length)],
+                        on_finish: function(data){
+                            db.push([responses["id"], most_recent[0], most_recent[1], data.stimulus, data.response, school_filler[data.stimulus], data.rt]);
+                        }
+                    }
+                    t.push(question);
                     //randomize order
                     t = shuffle(t);
+                
                     //push all of these to the real timeline
                     for(question of t){
                         timeline2.push(question);
+                        var fixation = {
+                            type: jsPsychHtmlKeyboardResponse,
+                            stimulus: '<div style="font-size:60px;">+</div>',
+                            choices: "NO_KEYS",
+                            trial_duration: 3000,
+                        };
+                        timeline2.push(fixation);
                     }
                 }
                 //now we create new combined variable with the combined timeline
