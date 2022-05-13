@@ -173,15 +173,15 @@
             auto_preload: true, 
         }
         // practice trial instructions
-        var practice_trial_instructions = {
+        var gen_instructions = {
             type: jsPsychHtmlButtonResponse,
-            stimulus: practice_trial_instructions, 
+            stimulus: general_instructions, 
             choices: ['Continue'],
             data:{
                 internal_type: "practice trial instructions"
             },
         }
-        timeline.push(practice_trial_instructions);
+        timeline.push(gen_instructions);
 
         var practice_trial_image = {
             type: jsPsychImageButtonResponse,
@@ -206,14 +206,23 @@
         function create_instruction_trial(timeline){
             // this will be the internal timeline that we use to create this 
             var timeline2 = [];
+            // prevideo instructions 
+            //To get you accustomed to this set up, we will now do a brief training session. 
+            var prevideotext = {
+                type: jsPsychHtmlButtonResponse,
+                stimulus: pre_instruction_trial, 
+                choices: ['Continue'],
+            }
+            timeline2.push(prevideotext);
             //add video here 
             var video = {
-                    type: jsPsychVideoKeyboardResponse, 
-                    controls: true, 
-                    autoplay: false, 
+                    type: jsPsychVideoButtonResponse, 
+                    controls: false, 
+                    autoplay: true, 
+                    trial_ends_after_video: true, 
                     stimulus: ['instruction/trial.mp4'],
-                    prompt: '<h5> Press play when you are ready and watch each video once. Press the spacebar to continue.</h5>',
-                    choices: [" "],
+                    prompt: '<h5> Please watch the video. </h5>',
+                    choices: ["temporary"],
                     on_finish: function(data){
                     //    console.log("")
                     }
@@ -234,8 +243,11 @@
                 var trial = {
                     type: jsPsychHtmlKeyboardResponse,
                     stimulus: key,
-                    //15 seconds 
-                    trial_duration: 15000, 
+                    choices: ["f", "j"],
+                    // we want to map the f/j thing here
+                    prompt: '<p style="font-size:18px; color:black"> <b>Yes (F) &emsp; &emsp; &emsp; &emsp; &emsp; No (J) </b> </p>',
+                    //8 seconds 
+                    trial_duration: 8000, 
                 }
                 var loop_node = {
                     timeline: [trial],
@@ -253,7 +265,7 @@
                     type: jsPsychHtmlKeyboardResponse,
                     stimulus: '<div style="font-size:60px;">+</div>',
                     choices: "NO_KEYS",
-                    trial_duration: 3000,
+                    trial_duration: 1000,
                 };
                 timeline2.push(fixation);
             }
@@ -318,6 +330,11 @@
                 cmap[`./videos/${c}/${cond}.mp4`] = [c, cond];
             }
         }
+        // taking the filler and creating a modefiable array that we can sample without replacement from 
+        // var pirate_filler = new Map(Object.entries(pirate_filler)); 
+        // var school_filler = new Map(Object.entries(school_filler)); 
+        // var spy_filler = new Map(Object.entries(spy_filler));
+
          /* credit to https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array*/
          function shuffle(array) {
             let currentIndex = array.length,  randomIndex;
@@ -337,33 +354,28 @@
         video_names = shuffle(video_names);
         console.log(video_names);
        
-        video_names = [video_names[0]];
+        video_names = [video_names[0], video_names[2], video_names[3]];
         
         // this will store the most recent video_name
         var most_recent = ["shshs"];
 
         // db[i] = [context, condition, question, response, correct_response, rt]  
         var db = [];
-        /* q = yes, p = no */
+       
+        /* F = yes, J = no */
         function create_video_trials(video_names, timeline){
             for (title of video_names){
                 //this will be the timeline that will contain the video-question sequence
                 timeline2 = [];
-                //prevideo instructions 
-                var vinstruct = {
-                    type: jsPsychHtmlButtonResponse,
-                    stimulus: video_instructions,
-                    choices: ['Continue'],
-                    // prompt: "<p>What color is the ink?</p>",
-                }
-                timeline2.push(vinstruct);
+
                 var video = {
-                    type: jsPsychVideoKeyboardResponse, 
-                    autoplay: false, 
-                    controls: true, 
+                    type: jsPsychVideoButtonResponse, 
+                    autoplay: true, 
+                    controls: false, 
+                    trial_ends_after_video: true, 
                     stimulus: [title],
-                    prompt: '<h5> Please watch the video carefully and press the spacebar to continue. </h5>',
-                    choices: [" "],
+                    prompt: '<h5> Please watch the video.</h5>',
+                    choices: ["Temporary"],
                     on_finish: function(data){
                         console.log(data);
                         console.log(db);
@@ -391,8 +403,9 @@
                     var target = {
                         type: jsPsychHtmlKeyboardResponse, 
                         stimulus: text,
-                        choices: ["q", "p"], 
-                        trial_duration: 15000, 
+                        choices: ["f", "j"], 
+                        prompt: '<p style="font-size:18px; color:black"> <b>Yes (F) &emsp; &emsp; &emsp; &emsp; &emsp; No (J) </b> </p>',
+                        trial_duration: 8000, 
                         on_finish: function(data){
                             // 0 == yes, 1 == no
                             db.push([responses["id"], most_recent[0], most_recent[1], data.stimulus, data.response, correct_ans, data.rt]);
@@ -406,23 +419,14 @@
                 var c = cmap[title][0];
                 if(c == "pirate"){
                     var questions = [];
-                    //previous version
                     for (key in pirate_filler){
                         questions.push(key);
-                        // var question = {
-                        //     type: jsPsychHtmlKeyboardResponse, 
-                        //     choices: ["q", "p"],
-                        //     stimulus: key,
-                        //     on_finish: function(data){
-                        //         db.push([responses["id"], most_recent[0], most_recent[1], data.stimulus, data.response, pirate_filler[data.stimulus], data.rt]);
-                        //     }
-                        // }
-                        // t.push(question);
                     }
-                    // new 
+                    var index = Math.floor(Math.random()*questions.length)
                     var question = {
                         type: jsPsychHtmlKeyboardResponse, 
-                        choices: ["p", "q"], 
+                        choices: ["f", "j"], 
+                        prompt: '<p style="font-size:18px; color:black"> <b>Yes (F) &emsp; &emsp; &emsp; &emsp; &emsp; No (J) </b> </p>',
                         trial_duration: 15000, 
                         stimulus: questions[Math.floor(Math.random()*questions.length)],
                         on_finish: function(data){
@@ -430,6 +434,8 @@
                         }
                     }
                     t.push(question);
+                    // pirate_filler.delete(questions[index])
+                    console.log(pirate_filler)
                     //randomize order
                     t = shuffle(t);
                     //push all of these to the real timeline
@@ -439,7 +445,7 @@
                             type: jsPsychHtmlKeyboardResponse,
                             stimulus: '<div style="font-size:60px;">+</div>',
                             choices: "NO_KEYS",
-                            trial_duration: 3000,
+                            trial_duration: 1000,
                         };
                         timeline2.push(fixation);
                     }
@@ -448,19 +454,11 @@
                     var questions = []
                     for (key in spy_filler){
                         questions.push(key);
-                        // var question = {
-                        //     type: jsPsychHtmlKeyboardResponse, 
-                        //     choices: ["q", "p"],
-                        //     stimulus: key,
-                        //     on_finish: function(data){
-                        //         db.push([responses["id"], most_recent[0], most_recent[1], data.stimulus, data.response, spy_filler[data.stimulus], data.rt]);
-                        //     }
-                        // }
-                        // t.push(question);
                     }
                     var question = {
                         type: jsPsychHtmlKeyboardResponse, 
-                        choices: ["p", "q"], 
+                        choices: ["f", "j"], 
+                        prompt: '<p style="font-size:18px; color:black"> <b>Yes (F) &emsp; &emsp; &emsp; &emsp; &emsp; No (J) </b> </p>',
                         trial_duration: 15000,
                         stimulus: questions[Math.floor(Math.random()*questions.length)],
                         on_finish: function(data){
@@ -468,6 +466,8 @@
                         }
                     }
                     t.push(question);
+                    // spy_filler.delete(questions[index])
+                    console.log(spy_filler)
                     //randomize order
                     t = shuffle(t);
                     //push all of these to the real timeline
@@ -477,7 +477,7 @@
                             type: jsPsychHtmlKeyboardResponse,
                             stimulus: '<div style="font-size:60px;">+</div>',
                             choices: "NO_KEYS",
-                            trial_duration: 3000,
+                            trial_duration: 1000,
                         };
                         timeline2.push(fixation);
                     }
@@ -486,19 +486,11 @@
                     var questions = []
                     for (key in school_filler){
                         questions.push(key);
-                        // var question = {
-                        //     type: jsPsychHtmlKeyboardResponse, 
-                        //     choices: ["q", "p"],
-                        //     stimulus: key,
-                        //     on_finish: function(data){
-                        //         db.push([responses["id"], most_recent[0], most_recent[1], data.stimulus, data.response, school_filler[data.stimulus], data.rt]);
-                        //     }
-                        // }
-                        // t.push(question);
                     }
                     var question = {
                         type: jsPsychHtmlKeyboardResponse, 
-                        choices: ["p", "q"], 
+                        choices: ["f", "j"], 
+                        prompt: '<p style="font-size:18px; color:black"> <b>Yes (F) &emsp; &emsp; &emsp; &emsp; &emsp; No (J) </b> </p>',
                         trial_duration: 15000,
                         stimulus: questions[Math.floor(Math.random()*questions.length)],
                         on_finish: function(data){
@@ -506,6 +498,8 @@
                         }
                     }
                     t.push(question);
+                    // school_filler.delete(questions[index])
+                    console.log(school_filler)
                     //randomize order
                     t = shuffle(t);
                 
@@ -516,7 +510,7 @@
                             type: jsPsychHtmlKeyboardResponse,
                             stimulus: '<div style="font-size:60px;">+</div>',
                             choices: "NO_KEYS",
-                            trial_duration: 3000,
+                            trial_duration: 1000,
                         };
                         timeline2.push(fixation);
                     }
