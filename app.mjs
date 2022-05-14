@@ -31,6 +31,9 @@ app.use(bodyParser.json());
 
 // serving the server the index.html file 
 app.use(express.static('public'));
+app.use(express.static('videos'));
+
+// app.use(express.static(path.join(__dirname + "/public")));
 
 // if we receive a "get" request from the path "./", then we will send the message receiving
 app.get('/', (req, res) => {
