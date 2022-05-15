@@ -31,7 +31,6 @@ app.use(bodyParser.json());
 
 // serving the server the index.html file 
 app.use(express.static('public'));
-app.use('/static', express.static('static'))
 
 
 // app.use(express.static(path.join(__dirname + "/public")));
