@@ -320,14 +320,14 @@
         var video_names = []
         for (c of context){
             for (cond of conditions){
-                video_names.push(`./videos/${c}/${cond}.mp4`);
+                video_names.push(`videos/${c}/${cond}.mp4`);
             }
         }
         //quick context mapping
         cmap = {};
         for (c of context){
             for (cond of conditions){
-                cmap[`./videos/${c}/${cond}.mp4`] = [c, cond];
+                cmap[`videos/${c}/${cond}.mp4`] = [c, cond];
             }
         }
         // taking the filler and creating a modefiable array that we can sample without replacement from 
