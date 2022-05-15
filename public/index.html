@@ -16,7 +16,7 @@
         <script src="./jspsych/plugin-preload.js"></script>
         <script src="./jspsych/plugin-survey-text.js"></script>
         <script src="./filler.js"></script>
-        <script src="./instruction/instruction.js"></script>
+        <script src="../static/instruction/instruction.js"></script>
         <link href="jspsych/jspsych.css" rel="stylesheet" type="text/css"/>
     </head>
     <body>
@@ -185,7 +185,7 @@
 
         var practice_trial_image = {
             type: jsPsychImageButtonResponse,
-            stimulus: 'instruction/handposition.png',
+            stimulus: 'static/instruction/handposition.png',
             stimulus_height: 500, 
             maintain_aspect_ratio: true, 
             // prompt: "Please click continue.",
@@ -220,7 +220,7 @@
                     controls: false, 
                     autoplay: true, 
                     trial_ends_after_video: true, 
-                    stimulus: ['instruction/trial.mp4'],
+                    stimulus: ['static/instruction/trial.mp4'],
                     prompt: '<h5> Please watch the video. </h5>',
                     choices: [],
                     on_finish: function(data){
