@@ -34,7 +34,7 @@ var school_filler = {'Are Dr. C’s shoes red?': ['School_Filler_7', 'N'],
 
 // target question dictionary 
 var target_questions = {
-'Pirate': {
+'pirate': {
     'AI': {'Does Harry know where Maria is?': ['Pirate_Alter_2', 'N'],'Does the Captain know where Maria is?': ['Pirate_Alter_1', 'N']},
     'EI': {'Does Harry know where Maria is?': ['Pirate_Ego_2', 'N'],'Does the Captain know where Maria is?': ['Pirate_Ego_1', 'Y']},
     'FB': {'Does Harry know where Maria is?': ['Pirate_FB_2', 'N'],'Does the Captain know where Maria is?': ['Pirate_FB_1', 'N']},
@@ -42,14 +42,14 @@ var target_questions = {
     'NI': {'Does Harry know where Maria is?': ['Pirate_NS_2', 'N'],'Does the Captain know where Maria is? ': ['Pirate_NS_1', 'N']},
     'TB': {'Does Harry know where Maria is?': ['Pirate_TB_2', 'N'],'Does the Captain know where Maria is?': ['Pirate_TB_1', 'Y']}
     },
-'School': {
+'school': {
     'AI': {'Does Dr. C know where Billy is?': ['School_Alter_1', 'N'],'Does Jane know where Billy is?': ['School_Alter_2', 'N']},
     'EI': {'Does Dr. C know where Billy is?': ['School_Ego_1', 'Y'],'Does Jane know where Billy is?': ['School_Ego_2', 'N']},
     'FB': {'Does Dr. C know where Billy is?': ['School_FB_1', 'N'],'Does Jane know where Billy is? ': ['School_FB_2', 'N']},
     'G': {'Does Dr. C know where Billy is?': ['School_Gettier_1', 'Y'],'Does Jane know where Billy is?': ['School_Gettier_2', 'Y']},
     'NI': {'Does Dr. C know where Billy is?': ['School_NS_1', 'N'],'Does Jane know where Billy is?': ['School_NS_2', 'N']},
     'TB': {'Does Dr. C know where Billy is?': ['School_TB_1', 'Y'],'Does Jane know where Billy is?': ['School_TB_2', 'N']}},
-'Spy': {
+'spy': {
     'AI': {'Does Lieutenant Jack know where Commander Greenville is?': ['Spy_Alter_1','N'],'Does Major Bryant know where Commander Greenville is?': ['Spy_Alter_2','N']},
     'EI': {'Does Lieutenant Jack know where Commander Greenville is? ': ['Spy_Ego_1','N'],'Does Major Bryant know where Commander Greenville is?': ['Spy_Ego_2','Y']},
     'FB': {'Does Lieutenant Jack know where Commander Greenville is?': ['Spy_FB_1','N'],'Does Major Bryant know where Commander Greenville is?': ['Spy_FB_2', 'N']},

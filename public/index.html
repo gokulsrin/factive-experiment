@@ -8,6 +8,7 @@
         <script src="./jspsych/plugin-video-keyboard-response.js"></script>
         <script src="./jspsych/plugin-video-button-response.js"></script>
         <script src="./jspsych/plugin-image-button-response.js"></script>
+        <script src="./jspsych/plugin-image-keyboard-response.js"></script>
         <script src="./jspsych/plugin-survey-html-form.js"></script>
         <script src="./jspsych/plugin-html-button-response.js"></script>
         <script src="./jspsych/plugin-html-keyboard-response.js"></script>
@@ -15,7 +16,8 @@
         <script src="./jspsych/plugin-survey-multi-select.js"></script>
         <script src="./jspsych/plugin-preload.js"></script>
         <script src="./jspsych/plugin-survey-text.js"></script>
-        <script src="./filler.js"></script>
+        <!-- <script src="./filler.js"></script> -->
+        <script src="./data/questions.js"></script>
         <script src="./instruction/instruction.js"></script>
         <link href="jspsych/jspsych.css" rel="stylesheet" type="text/css"/>
     </head>
@@ -201,8 +203,6 @@
             - This will work by providing them some test video video 
             - asking them to answer the questions correctly, and repeating the questions until they answer correctly 
         */
-       
-
         function create_instruction_trial(timeline){
             // this will be the internal timeline that we use to create this 
             var timeline2 = [];
@@ -275,6 +275,7 @@
             timeline.push(it);
         }
         // create_instruction_trial(timeline);
+
         /* push post instruction trial script */
         var pits = {
             type: jsPsychHtmlButtonResponse, 
@@ -285,33 +286,7 @@
         /* Doing the prep work for the relevent target question manipulation we will do later */
         var context = ["spy", "pirate", "school"];
         var conditions = ["EI", "FB", "G", "NI", "AI", "TB"];
-        var condition_qs = {
-            "school":{
-                "FB": {"Does Dr. C know where Billy is?":"N", "Does Jane know where Billy is?":"N"}, 
-                "SI":{"Does Dr. C know where Billy is?":"N", "Does Jane know where Billy is?":"N"}, 
-                "EI":{"Does Dr. C know where Billy is?":"Y", "Does Jane know where Billy is?":"N"}, 
-                "NI":{"Does Dr. C know where Billy is?":"N", "Does Jane know where Billy is?":"N"}, 
-                "TB":{"Does Dr. C know where Billy is?":"Y", "Does Jane know where Billy is?":"N"}, 
-                "G":{"Does Dr. C know where Billy is?":"Y", "Does Jane know where Billy is?":"Y"}, 
-            }, 
-            "spy":{
-                "FB": {"Does Captain know where Maria is?":"N", "Does Harry know where Maria is?":"N"}, 
-                "SI":{"Does Captain know where Maria is?":"N", "Does Harry know where Maria is?":"N"},
-                "EI":{"Does Captain know where Maria is?":"Y", "Does Harry know where Maria is?":"N"},
-                "NI":{"Does Captain know where Maria is?":"N", "Does Harry know where Maria is?":"N"},
-                "TB":{"Does Captain know where Maria is?":"Y", "Does Harry know where Maria is?":"N"},
-                "G":{"Does Captain know where Maria is?":"Y", "Does Harry know where Maria is?":"Y"},
-            }, 
-            "pirate":{
-                "FB":{"Does Lieutenant Jack know where Commander Greenville is?":"N", "Does Major Bryant know where Commander Greenville is?":"N"}, 
-                "SI":{"Does Lieutenant Jack know where Commander Greenville is?":"N", "Does Major Bryant know where Commander Greenville is?":"N"}, 
-                "EI":{"Does Lieutenant Jack know where Commander Greenville is?":"N", "Does Major Bryant know where Commander Greenville is?":"Y"}, 
-                "NI":{"Does Lieutenant Jack know where Commander Greenville is?":"N", "Does Major Bryant know where Commander Greenville is?":"N"}, 
-                "TB":{"Does Lieutenant Jack know where Commander Greenville is?":"Y", "Does Major Bryant know where Commander Greenville is?":"Y"}, 
-                "G":{"Does Lieutenant Jack know where Commander Greenville is?":"Y", "Does Major Bryant know where Commander Greenville is?":"Y"}, 
-            }
-
-        }   
+        var condition_qs = target_questions
         /* Prep work for pushing the 3 distinct scenarios with 6 different conditions 
         - so, I have to establish a mapping
         - create a shuffle algorithm 
@@ -330,11 +305,28 @@
                 cmap[`videos/${c}/${cond}.MP4`] = [c, cond];
             }
         }
-        // taking the filler and creating a modefiable array that we can sample without replacement from 
-        // var pirate_filler = new Map(Object.entries(pirate_filler)); 
-        // var school_filler = new Map(Object.entries(school_filler)); 
-        // var spy_filler = new Map(Object.entries(spy_filler));
-
+        console.log(cmap)
+        console.log(condition_qs)
+        
+        //map images to their respective question 
+        imap = {}
+        for (q in pirate_filler){
+            imap["./pictures/"+pirate_filler[q][0]+".jpg"] = [q, pirate_filler[q][1]]
+        }
+        for (q in spy_filler){
+            imap["./pictures/"+spy_filler[q][0]+".jpg"] = [q, spy_filler[q][1]]
+        }
+        for (q in school_filler){
+            imap["./pictures/"+school_filler[q][0]+".jpg"] = [q, school_filler[q][1]]
+        }
+        for (c in target_questions){
+            for (cond in target_questions[c]){
+                for (q in target_questions[c][cond]){
+                    imap["./pictures/"+target_questions[c][cond][q][0]+".jpg"] = [q, target_questions[c][cond][q][1]]
+                }
+            }
+        }
+        console.log(imap)
          /* credit to https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array*/
          function shuffle(array) {
             let currentIndex = array.length,  randomIndex;
@@ -354,7 +346,7 @@
         video_names = shuffle(video_names);
         console.log(video_names);
        
-        video_names = [video_names[0], video_names[2], video_names[3]];
+        // video_names = [video_names[0], video_names[2], video_names[3]];
         
         // this will store the most recent video_name
         var most_recent = ["shshs"];
@@ -369,6 +361,7 @@
                 timeline2 = [];
                 // need to push the page with face-name map before the video 
                 var c = cmap[title][0];
+                //perhaps remove? 
                 var img; 
                 if (c == "pirate"){
                     img = {
@@ -408,7 +401,7 @@
                     trial_ends_after_video: true, 
                     stimulus: [title],
                     prompt: '<h5> Please watch the video.</h5>',
-                    choices: [],
+                    choices: ["submit"],
                     on_finish: function(data){
                         console.log(data);
                         console.log(db);
@@ -431,17 +424,18 @@
                 t = []; //array that will contain all the target + context specific filler questions
                 for (var text in condition_qs[cmap[title][0]][cmap[title][1]]) {
                     console.log(text);
-                    var correct_ans = condition_qs[cmap[title][0]][cmap[title][1]][text];
-                    console.log(correct_ans);
+                    var correct_ans = condition_qs[cmap[title][0]][cmap[title][1]][text][1];
+                    var image_dir =  "./pictures/"+condition_qs[cmap[title][0]][cmap[title][1]][text][0]+".jpg";
+                    console.log(image_dir);
                     var target = {
-                        type: jsPsychHtmlKeyboardResponse, 
-                        stimulus: text,
+                        type: jsPsychImageKeyboardResponse, 
+                        stimulus: image_dir,
                         choices: ["f", "j"], 
                         prompt: '<p style="font-size:18px; color:black"> <b>Yes (F) &emsp; &emsp; &emsp; &emsp; &emsp; No (J) </b> </p>',
                         trial_duration: 8000, 
                         on_finish: function(data){
                             // 0 == yes, 1 == no
-                            db.push([responses["id"], most_recent[0], most_recent[1], data.stimulus, data.response, correct_ans, data.rt]);
+                            db.push([responses["id"], most_recent[0], most_recent[1], text, data.response, correct_ans, data.rt]);
                         }
                     }
                     t.push(target);
@@ -450,6 +444,7 @@
                 /* depending on the condition, we will ask different filler. plus, these question need to be in random order */
                 /* Apparently we've decided to just add 1 filler - so the point here is to randomly insert 1 filler question */
                 var c = cmap[title][0];
+                console.log(pirate_filler)
                 if(c == "pirate"){
                     var questions = [];
                     for (key in pirate_filler){
@@ -457,13 +452,14 @@
                     }
                     var index = Math.floor(Math.random()*questions.length)
                     var question = {
-                        type: jsPsychHtmlKeyboardResponse, 
+                        type: jsPsychImageKeyboardResponse,
                         choices: ["f", "j"], 
                         prompt: '<p style="font-size:18px; color:black"> <b>Yes (F) &emsp; &emsp; &emsp; &emsp; &emsp; No (J) </b> </p>',
                         trial_duration: 15000, 
-                        stimulus: questions[Math.floor(Math.random()*questions.length)],
+                        stimulus:  "./pictures/"+pirate_filler[questions[index]][0]+".jpg",
                         on_finish: function(data){
-                            db.push([responses["id"], most_recent[0], most_recent[1], data.stimulus, data.response, pirate_filler[data.stimulus], data.rt]);
+                            console.log(questions[index]);
+                            db.push([responses["id"], most_recent[0], most_recent[1], imap[data.stimulus][0], data.response, imap[data.stimulus][1], data.rt]);
                         }
                     }
                     t.push(question);
@@ -488,14 +484,16 @@
                     for (key in spy_filler){
                         questions.push(key);
                     }
+                    var index = Math.floor(Math.random()*questions.length)
                     var question = {
-                        type: jsPsychHtmlKeyboardResponse, 
+                        type: jsPsychImageKeyboardResponse,
                         choices: ["f", "j"], 
                         prompt: '<p style="font-size:18px; color:black"> <b>Yes (F) &emsp; &emsp; &emsp; &emsp; &emsp; No (J) </b> </p>',
-                        trial_duration: 15000,
-                        stimulus: questions[Math.floor(Math.random()*questions.length)],
+                        trial_duration: 15000, 
+                        stimulus: "./pictures/"+spy_filler[questions[index]][0]+".jpg",
                         on_finish: function(data){
-                            db.push([responses["id"], most_recent[0], most_recent[1], data.stimulus, data.response, spy_filler[data.stimulus], data.rt]);
+                            console.log(questions[index]);
+                            db.push([responses["id"], most_recent[0], most_recent[1], imap[data.stimulus][0], data.response, imap[data.stimulus][1], data.rt]);
                         }
                     }
                     t.push(question);
@@ -520,14 +518,16 @@
                     for (key in school_filler){
                         questions.push(key);
                     }
+                    var index = Math.floor(Math.random()*questions.length)
                     var question = {
-                        type: jsPsychHtmlKeyboardResponse, 
+                        type: jsPsychImageKeyboardResponse,
                         choices: ["f", "j"], 
                         prompt: '<p style="font-size:18px; color:black"> <b>Yes (F) &emsp; &emsp; &emsp; &emsp; &emsp; No (J) </b> </p>',
-                        trial_duration: 15000,
-                        stimulus: questions[Math.floor(Math.random()*questions.length)],
+                        trial_duration: 15000, 
+                        stimulus: "./pictures/"+school_filler[questions[index]][0]+".jpg",
                         on_finish: function(data){
-                            db.push([responses["id"], most_recent[0], most_recent[1], data.stimulus, data.response, school_filler[data.stimulus], data.rt]);
+                            console.log(questions[index]);
+                            db.push([responses["id"], most_recent[0], most_recent[1], imap[data.stimulus][0], data.response, imap[data.stimulus][1], data.rt]);
                         }
                     }
                     t.push(question);
