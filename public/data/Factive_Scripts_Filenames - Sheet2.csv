@@ -1,0 +1,68 @@
+Filename,Question,Condition,Setting,Correct_Answer
+School_FB_1,Does Dr. C know where Billy is?,FB,School,N
+School_FB_2,Does Jane know where Billy is? ,FB,School,N
+School_Alter_1,Does Dr. C know where Billy is?,Altercentric,School,N
+School_Alter_2,Does Jane know where Billy is?,Altercentric,School,N
+School_Ego_1,Does Dr. C know where Billy is?,Egocentric,School,Y
+School_Ego_2,Does Jane know where Billy is?,Egocentric,School,N
+School_NS_1,Does Dr. C know where Billy is?,Non-specific,School,N
+School_NS_2,Does Jane know where Billy is?,Non-specific,School,N
+School_TB_1,Does Dr. C know where Billy is?,TB,School,Y
+School_TB_2,Does Jane know where Billy is?,TB,School,N
+School_Gettier_1,Does Dr. C know where Billy is?,Gettier,School,Y
+School_Gettier_2,Does Jane know where Billy is?,Gettier,School,Y
+School_Filler_1,Are there two tables in the history classroom?,Filler,School,Y
+School_Filler_2,Is there a plant in Dr. C's classroom?,Filler,School,Y
+School_Filler_3,Are the walls in Dr. C's classroom yellow?,Filler,School,N
+School_Filler_4,Is Janes shirt yellow?,Attention Check,School,N
+School_Filler_5,Is Billy’s hair brown?,Attention Check ,School,N
+School_Filler_6,Are there curtains in the classroom window?,Filler,School,N
+School_Filler_7,Are Dr. C’s shoes red?,Filler,School,N
+School_Filler_8,Is there a timeline in Dr. C's classroom?,Filler,School,Y
+School_Filler_9,Is there a globe in Dr. C's classroom?,Filler,School,Y
+School_Filler_10,Are the students sitting in a circle?,Filler,School,N
+Pirate_FB_1,Does the Captain know where Maria is?,FB,Pirate,N
+Pirate_FB_2,Does Harry know where Maria is?,FB,Pirate,N
+Pirate_Alter_1,Does the Captain know where Maria is?,Altercentric,Pirate,N
+Pirate_Alter_2,Does Harry know where Maria is?,Altercentric,Pirate,N
+Pirate_Ego_1,Does the Captain know where Maria is?,Egocentric,Pirate,Y
+Pirate_Ego_2,Does Harry know where Maria is?,Egocentric,Pirate,N
+Pirate_NS_1,Does the Captain know where Maria is? ,Non-specific,Pirate,N
+Pirate_NS_2,Does Harry know where Maria is?,Non-specific,Pirate,N
+Pirate_TB_1,Does the Captain know where Maria is?,TB,Pirate,Y
+Pirate_TB_2,Does Harry know where Maria is?,TB,Pirate,N
+Pirate_Gettier_1,Does the Captain know where Maria is?,Gettier,Pirate,Y
+Pirate_Gettier_2,Does Harry know where Maria is?,Gettier,Pirate,Y
+Pirate_Filler_1,Is the Captain’s uniform blue?,Filler,Pirate,Y
+Pirate_Filler_2,Does the Captain have a beard? ,Attention Check,Pirate,Y
+Pirate_Filler_3,Is there a pig roasting on the fire?,Filler,Pirate,N
+Pirate_Filler_4,Is it raining?,Filler,Pirate,N
+Pirate_Filler_5,Are there three hammocks?,Filler,Pirate,N
+Pirate_Filler_6,Are there palm trees?,Filler,Pirate,Y
+Pirate_Filler_7,Does the tree house have 4 levels?,Filler,Pirate,N
+Pirate_Filler_8,Is there a cannon?,Filler,Pirate,Y
+Pirate_Filler_9,Are Marias shoes green?,Filler,Pirate,Y
+Pirate_Filler_10,Does Maria have blonde hair? ,Attention Check,Pirate,N
+Spy_FB_1,Does Lieutenant Jack know where Commander Greenville is?,FB,Spy,N
+Spy_FB_2,Does Major Bryant know where Commander Greenville is?,FB,Spy,N
+Spy_Alter_1,Does Lieutenant Jack know where Commander Greenville is?,Altercentric,Spy,N
+Spy_Alter_2,Does Major Bryant know where Commander Greenville is?,Altercentric,Spy,N
+Spy_Ego_1,Does Lieutenant Jack know where Commander Greenville is? ,Egocentric,Spy,N
+Spy_Ego_2,Does Major Bryant know where Commander Greenville is?,Egocentric,Spy,Y
+Spy_NS_1,Does Lieutenant Jack know where Commander Greenville is? ,Non-specific,Spy,N
+Spy_NS_2,Does Major Bryant know where Commander Greenville is?,Non-specific,Spy,N
+Spy_TB_1,Does Lieutenant Jack know where Commander Greenville is? ,TB,Spy,N
+Spy_TB_2,Does Major Bryant know where Commander Greenville is?,TB,Spy,Y
+Spy_Gettier_1,Does Lieutenant Jack know where Commander Greenville is?,Gettier,Spy,Y
+Spy_Gettier_2,Does Major Bryant know where Commander Greenville is? ,Gettier,Spy,Y
+Spy_Filler_1,Are there two rockets?,Filler,Spy,N
+Spy_Filler_2,Is there a window in the control room?,Filler,Spy,N
+Spy_Filler_3,Is Commander Greenville’s uniform blue?,Attention Check,Spy,N
+Spy_Filler_4,Is Major Bryant Bald?,Attention Check,Spy,Y
+Spy_Filler_5,Is Lieutenant Jack wearing a watch?,Filler,Spy,Y
+Spy_Filler_6,Are there two chairs in the command room?,Filler,Spy,N
+Spy_Filler_7,Is the command room floor brown?,Filler,Spy,N
+Spy_Filler_8,Are there stairs in the control room?,Filler,Spy,Y
+Spy_Filler_9,"Is there a dog in the command room?
+",Filler,Spy,N
+Spy_Filler_10,Are there keyboards in the control room?,Filler,Spy,Y

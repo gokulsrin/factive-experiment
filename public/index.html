@@ -206,8 +206,8 @@
         function create_instruction_trial(timeline){
             // this will be the internal timeline that we use to create this 
             var timeline2 = [];
-            // prevideo instructions 
-            //To get you accustomed to this set up, we will now do a brief training session. 
+            // pre-video instructions 
+            // To get you accustomed to this set up, we will now do a brief training session. 
             var prevideotext = {
                 type: jsPsychHtmlButtonResponse,
                 stimulus: pre_instruction_trial, 
@@ -274,7 +274,7 @@
             }
             timeline.push(it);
         }
-        create_instruction_trial(timeline);
+        // create_instruction_trial(timeline);
         /* push post instruction trial script */
         var pits = {
             type: jsPsychHtmlButtonResponse, 
@@ -284,7 +284,7 @@
         timeline.push(pits);
         /* Doing the prep work for the relevent target question manipulation we will do later */
         var context = ["spy", "pirate", "school"];
-        var conditions = ["EI", "FB", "G", "NI", "SI", "TB"];
+        var conditions = ["EI", "FB", "G", "NI", "AI", "TB"];
         var condition_qs = {
             "school":{
                 "FB": {"Does Dr. C know where Billy is?":"N", "Does Jane know where Billy is?":"N"}, 
@@ -367,7 +367,40 @@
             for (title of video_names){
                 //this will be the timeline that will contain the video-question sequence
                 timeline2 = [];
-
+                // need to push the page with face-name map before the video 
+                var c = cmap[title][0];
+                var img; 
+                if (c == "pirate"){
+                    img = {
+                        type: jsPsychImageButtonResponse, 
+                        stimulus: "./pictures/pirate.png",
+                        stimulus_width: 1000, 
+                        maintain_aspect_ratio: true, 
+                        choices: ["Continue"], 
+                        prompt: '<p style="font-size:18px; color:black"> <b>Please press continue once you have memorized the names of the characters.</b></p>',
+                    }
+                }
+                else if(c == "school"){
+                    img = {
+                        type: jsPsychImageButtonResponse, 
+                        stimulus: "./pictures/school.png",
+                        stimulus_width: 1000, 
+                        maintain_aspect_ratio: true, 
+                        choices: ["Continue"], 
+                        prompt: '<p style="font-size:18px; color:black"> <b>Please press continue once you have memorized the names of the characters.</b></p>',
+                    }
+                }
+                else if(c == "spy"){
+                    img = {
+                        type: jsPsychImageButtonResponse, 
+                        stimulus: "./pictures/spy.png",
+                        stimulus_width: 1000, 
+                        maintain_aspect_ratio: true, 
+                        choices: ["Continue"], 
+                        prompt: '<p style="font-size:18px; color:black"> <b>Please press continue once you have memorized the names of the characters.</b></p>',
+                    }
+                }
+                timeline2.push(img);
                 var video = {
                     type: jsPsychVideoButtonResponse, 
                     autoplay: true, 
@@ -413,7 +446,7 @@
                     }
                     t.push(target);
                 }
-               
+                
                 /* depending on the condition, we will ask different filler. plus, these question need to be in random order */
                 /* Apparently we've decided to just add 1 filler - so the point here is to randomly insert 1 filler question */
                 var c = cmap[title][0];
