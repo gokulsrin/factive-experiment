@@ -274,7 +274,7 @@
             }
             timeline.push(it);
         }
-        // create_instruction_trial(timeline);
+        create_instruction_trial(timeline);
 
         /* push post instruction trial script */
         var pits = {
@@ -401,7 +401,7 @@
                     trial_ends_after_video: true, 
                     stimulus: [title],
                     prompt: '<h5> Please watch the video.</h5>',
-                    choices: ["submit"],
+                    choices: [],
                     on_finish: function(data){
                         console.log(data);
                         console.log(db);
