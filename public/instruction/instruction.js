@@ -15,9 +15,9 @@ var general_instructions = '<p style="font-size:18px; color:black"> In this expe
 var post_video_instructions = '<p style="font-size:18px; color:black; margin: 50px;"> You will now be shown a series of yes no questions. Please place your index fingers on F and J. Press F for ‘Yes’ and J for ‘No’. Answer as quickly as possible. <br/> Remember the questions will be auto-paced. If you do not answer in the allotted [15] seconds, you will not have an opportunity to re-answer. </br> <b> Press the spacebar when you are ready to proceed. </b>';
 // p = yes, q = no
 var instruction_trial = {
-    "Does Jill want to go kayaking tomorrow? ": "q", 
-    "Does Jack play the guitar? ": "q",
-    "Was the moon was full?": "p",
+    "Does Jill want to go kayaking tomorrow? ": "j", 
+    "Does Jack play the guitar? ": "j",
+    "Was the moon was full?": "f",
 } 
 
 var post_instruction_script = '<p style="font-size:18px; color:black; margin: 50px;"> Great job! We will now proceed to the actual experiment. </br> <b> Press continue when you are ready to proceed. <b>';

@@ -36,13 +36,13 @@
         /* This will allow us to use jspsych moving forward, and it also configures certain display settings, 
         as well as what will happen when the survey is completed...
         */
-        var responses = {}
         const jsPsych = initJsPsych({
             show_progress_bar: true,
             // override_safe_mode:true, 
             on_finish: function(){
                 //display survery data 
                 console.log(db);
+                console.log(responses);
                 //send both the responses and the data
                 save_data([responses, db]);
                 document.write('<p style="text-align:center"> You have completed the survey. Thank you for your cooperation. Your survey code is: "6B6B20F9".</p>');
@@ -50,7 +50,6 @@
         }); 
 
         var timeline = [];
-         /* Opening instructions */
 
         /* Consent form for the study*/
         var consent = {
@@ -64,8 +63,8 @@
         };
         timeline.push(consent);
     
-
         /* Collection of participant info*/
+        var responses = {} // responses will be formatted as follows [id] -> prolific_id, [age] -> age, same for race and ethnicity 
         var participant_info = {
             type: jsPsychSurveyText,
             preamble: 'Please provide us with some demographic information.',
@@ -94,6 +93,77 @@
             },
         };
         // timeline.push(participant_info);
+
+        /* Drop down for participant information 
+        - one of the problems here is that this form does not force participants to respond. 
+        */
+        var feedback_demographics = {
+            type: jsPsychSurveyHtmlForm,
+            html: '<div style="max-width:700px; text-align:center;"> <p> Please provide the following' +
+                ' information. </p> <div style="text-' +
+                'align:center;"> <div style="text-align:left; display:' +
+                'inline-block; margin-right:20px; line-height:1.8em;"> <ol>' +
+                    '<li>Prolific ID:</li> <br><br>' + 
+                    '<li>Age:</li> <br><br>' +
+                    '<li>Gender:</li> <br><br>' +
+                    '<li>Race:</li> <br><br><br><br><br><br>' +
+                    '<li>Ethnicity:</li>' +
+                '</ol> </div>' +
+                '<div style="text-align:left; display: inline-block;' +
+                ' line-height:1.8em;">' +
+                    //prolific id box 
+                    '<input name="prolific_id" type="text"/> <br> <br>' +
+                    // age text box
+                    '<input name="age" type="number"  min="18" max="100" /> <br> <br>' +
+                    // gender options
+                    '<input name="gender" type="radio" id="female" value=' +
+                        '"Female" /> <label for="female"> Female </label>' +
+                    '<input name="gender" type="radio" id="male" value=' +
+                        '"Male" /> <label for="male"> Male </label>' +
+                    '<input name="gender" type="radio" id="nonbinary" value=' +
+                        '"Non-binary" /> <label for="nonbinary"> Non-binary </label> <br>' +
+                    '<input name="gender" type="radio" id="other_gender" value=' +
+                        '"other_gender" /> <label for="other_gender"> Other: <input' +
+                        ' type="text" name="other_gender" /> </label> <br><br>' +
+                    // race options
+                    '<input name="race" type="radio" id="white" value=' +
+                        '"White" /> <label for="white"> White </label> <br>' +
+                    '<input name="race" type="radio" id="black" value=' +
+                        '"Black/African American" /> <label for="black">' +
+                        ' Black/African American </label> <br>' +
+                    '<input name="race" type="radio" id="am_ind" value=' +
+                        '"American Indian/Alaska Native" /> <label for="am_ind">' +
+                        ' American Indian/Alaska Native </label> <br>' +
+                    '<input name="race" type="radio" id="asian" value=' +
+                        '"Asian" /> <label for="asian"> Asian </label> <br>' +
+                    '<input name="race" type="radio" id="pac_isl" value=' +
+                        '"Native Hawaiian/Pacific Islander" /> <label for="pac_isl">' +
+                        ' Native Hawaiian/Pacific Islander </label> <br>' +
+                    '<input name="race" type="radio" id="multi" value=' +
+                        '"Multiracial" /> <label for="multi"> Multiracial/Mixed </label> <br>' +
+                    '<input name="race" type="radio" id="other_race" value="other_race" />' +
+                        '<label for="other_race"> Other: <input type="text"' +
+                        'name="other_race" /> </label> <br><br>' +
+                    // ethnicity options
+                    '<input name="ethnicity" type="radio" id="hisp" value=' +
+                        '"Hispanic" /> <label for="hisp"> Hispanic </label>' +
+                    '<input name="ethnicity" type="radio" id="nonhisp" value=' +
+                        '"Non-Hispanic" /> <label for="nonhisp"> Non-Hispanic' +
+                        ' </label>' +
+                '</div> </div>', 
+                on_finish: function(data){
+                    console.log(data);
+                    console.log(data.response);
+                    //add the features of the response to the dict
+                    responses["id"] = data.response["prolific_id"];
+                    responses["age"] = data.response["age"];
+                    responses["gender"] = data.response["gender"];
+                    responses["race"] = data.response["race"];
+                    responses["ethnicity"] = data.response["ethnicity"];
+                    console.log(responses);
+                },
+        }
+        timeline.push(feedback_demographics);
         var filler_questions = {"pirate":pirate_filler, "school":school_filler, "spy":spy_filler};
         console.log(filler_questions);
 
@@ -107,8 +177,9 @@
         //     },
         // }
         // timeline.push(study_description);
-         // preload the instructional video and other videos - this seems to work fine but may need to be changed... 
-         var preload = {
+        // preload the instructional video and other videos - this seems to work fine but may need to be changed... 
+
+        var preload = {
             type: jsPsychPreload,
             auto_preload: true, 
         }
@@ -243,9 +314,6 @@
                 cmap[`videos/${c}/${cond}.MP4`] = [c, cond];
             }
         }
-        console.log(cmap)
-        console.log(condition_qs)
-        
         //map images to their respective question 
         imap = {}
         for (q in pirate_filler){
@@ -282,14 +350,14 @@
 
         //shuffle order videos is displayed
         video_names = shuffle(video_names);
-        console.log(video_names);
-       
-        // video_names = [video_names[0], video_names[2], video_names[3]];
+
+        //for testing purposes
+        // video_names = [video_names[0]];
         
         // this will store the most recent video_name
         var most_recent = ["shshs"];
 
-        // db[i] = [context, condition, question, response, correct_response, rt]  
+        // db[i] = [context, condition, target/filler, question, response, correct_response, rt]  
         var db = [];
        
         /* F = yes, J = no */
@@ -341,10 +409,8 @@
                     prompt: '<h5> Please watch the video.</h5>',
                     choices: [],
                     on_finish: function(data){
-                        console.log(data);
-                        console.log(db);
-                        console.log(cmap[data.stimulus[0]]);
                         most_recent = cmap[data.stimulus[0]]; //most recent allows me to format the sql row such that I know the context and condition of every entry
+                        console.log(most_recent);
                     }
                 }
                 timeline2.push(video);
@@ -360,8 +426,9 @@
                 timeline2.push(p_video_instructions);
                 /* pushing the non-filler, target questions here into the array that will later be shuffled */
                 t = []; //array that will contain all the target + context specific filler questions
+                console.log(condition_qs[cmap[title][0]][cmap[title][1]]);
                 for (var text in condition_qs[cmap[title][0]][cmap[title][1]]) {
-                    console.log(text);
+                    const target_text = text;
                     var correct_ans = condition_qs[cmap[title][0]][cmap[title][1]][text][1];
                     var image_dir =  "./pictures/"+condition_qs[cmap[title][0]][cmap[title][1]][text][0]+".jpg";
                     console.log(image_dir);
@@ -373,7 +440,8 @@
                         trial_duration: 8000, 
                         on_finish: function(data){
                             // 0 == yes, 1 == no
-                            db.push([responses["id"], most_recent[0], most_recent[1], text, data.response, correct_ans, data.rt]);
+                            db.push([responses["id"], most_recent[0], most_recent[1], "t", target_text, data.response, correct_ans, data.rt]);
+                            console.log(db)
                         }
                     }
                     t.push(target);
@@ -382,7 +450,6 @@
                 /* depending on the condition, we will ask different filler. plus, these question need to be in random order */
                 /* Apparently we've decided to just add 1 filler - so the point here is to randomly insert 1 filler question */
                 var c = cmap[title][0];
-                console.log(pirate_filler)
                 if(c == "pirate"){
                     var questions = [];
                     for (key in pirate_filler){
@@ -396,12 +463,10 @@
                         trial_duration: 15000, 
                         stimulus:  "./pictures/"+pirate_filler[questions[index]][0]+".jpg",
                         on_finish: function(data){
-                            console.log(questions[index]);
-                            db.push([responses["id"], most_recent[0], most_recent[1], imap[data.stimulus][0], data.response, imap[data.stimulus][1], data.rt]);
+                            db.push([responses["id"], most_recent[0], most_recent[1], "f", imap[data.stimulus][0], data.response, imap[data.stimulus][1], data.rt]);
                         }
                     }
                     t.push(question);
-                    // pirate_filler.delete(questions[index])
                     console.log(pirate_filler)
                     //randomize order
                     t = shuffle(t);
@@ -430,13 +495,10 @@
                         trial_duration: 15000, 
                         stimulus: "./pictures/"+spy_filler[questions[index]][0]+".jpg",
                         on_finish: function(data){
-                            console.log(questions[index]);
-                            db.push([responses["id"], most_recent[0], most_recent[1], imap[data.stimulus][0], data.response, imap[data.stimulus][1], data.rt]);
+                            db.push([responses["id"], most_recent[0], most_recent[1], "f", imap[data.stimulus][0], data.response, imap[data.stimulus][1], data.rt]);
                         }
                     }
                     t.push(question);
-                    // spy_filler.delete(questions[index])
-                    console.log(spy_filler)
                     //randomize order
                     t = shuffle(t);
                     //push all of these to the real timeline
@@ -464,8 +526,7 @@
                         trial_duration: 15000, 
                         stimulus: "./pictures/"+school_filler[questions[index]][0]+".jpg",
                         on_finish: function(data){
-                            console.log(questions[index]);
-                            db.push([responses["id"], most_recent[0], most_recent[1], imap[data.stimulus][0], data.response, imap[data.stimulus][1], data.rt]);
+                            db.push([responses["id"], most_recent[0], most_recent[1], "f", imap[data.stimulus][0], data.response, imap[data.stimulus][1], data.rt]);
                         }
                     }
                     t.push(question);
@@ -498,70 +559,6 @@
             }
         }
         create_video_trials(video_names, timeline);
-
-        /* Drop down for participant information 
-        - one of the problems here is that this form does not force participants to respond. 
-        */
-        var feedback_demographics = {
-            type: jsPsychSurveyHtmlForm,
-            html: '<div style="max-width:700px; text-align:center;"> <p>' +
-                'What factors influenced how you decided to respond? Do you' +
-                ' have any questions or comments regarding the experiment?' +
-                '</p> <textarea name="feedback" cols="40" rows="6"' +
-                ' "autofocus"></textarea> <p> Please provide the following' +
-                ' information to complete the study. </p> <div style="text-' +
-                'align:center;"> <div style="text-align:left; display:' +
-                'inline-block; margin-right:20px; line-height:1.8em;"> <ol>' +
-                    '<li>Age:</li> <br><br>' +
-                    '<li>Gender:</li> <br><br>' +
-                    '<li>Race:</li> <br><br><br><br><br><br>' +
-                    '<li>Ethnicity:</li>' +
-                '</ol> </div>' +
-                '<div style="text-align:left; display: inline-block;' +
-                ' line-height:1.8em;">' +
-                    // age text box
-                    '<input name="age" type="number"  min="18" max="100" /> <br> <br>' +
-                    // gender options
-                    '<input name="gender" type="radio" id="female" value=' +
-                        '"Female" /> <label for="female"> Female </label>' +
-                    '<input name="gender" type="radio" id="male" value=' +
-                        '"Male" /> <label for="male"> Male </label>' +
-                    '<input name="gender" type="radio" id="nonbinary" value=' +
-                        '"Non-binary" /> <label for="nonbinary"> Non-binary </label> <br>' +
-                    '<input name="gender" type="radio" id="other_gender" value=' +
-                        '"other_gender" /> <label for="other_gender"> Other: <input' +
-                        ' type="text" name="other_gender" /> </label> <br><br>' +
-                    // race options
-                    '<input name="race" type="radio" id="white" value=' +
-                        '"White" /> <label for="white"> White </label> <br>' +
-                    '<input name="race" type="radio" id="black" value=' +
-                        '"Black/African American" /> <label for="black">' +
-                        ' Black/African American </label> <br>' +
-                    '<input name="race" type="radio" id="am_ind" value=' +
-                        '"American Indian/Alaska Native" /> <label for="am_ind">' +
-                        ' American Indian/Alaska Native </label> <br>' +
-                    '<input name="race" type="radio" id="asian" value=' +
-                        '"Asian" /> <label for="asian"> Asian </label> <br>' +
-                    '<input name="race" type="radio" id="pac_isl" value=' +
-                        '"Native Hawaiian/Pacific Islander" /> <label for="pac_isl">' +
-                        ' Native Hawaiian/Pacific Islander </label> <br>' +
-                    '<input name="race" type="radio" id="multi" value=' +
-                        '"Multiracial" /> <label for="multi"> Multiracial/Mixed </label> <br>' +
-                    '<input name="race" type="radio" id="other_race" value="other_race" />' +
-                        '<label for="other_race"> Other: <input type="text"' +
-                        'name="other_race" /> </label> <br><br>' +
-                    // ethnicity options
-                    '<input name="ethnicity" type="radio" id="hisp" value=' +
-                        '"Hispanic" /> <label for="hisp"> Hispanic </label>' +
-                    '<input name="ethnicity" type="radio" id="nonhisp" value=' +
-                        '"Non-Hispanic" /> <label for="nonhisp"> Non-Hispanic' +
-                        ' </label>' +
-                '</div> </div>', 
-                on_finish: function(data){
-                    console.log(data);
-                },
-        }
-        timeline.push(feedback_demographics);
 
         /* Closing remarks*/
         var debrief = {
