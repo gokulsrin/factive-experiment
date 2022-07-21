@@ -283,7 +283,7 @@
             }
             timeline.push(it);
         }
-        create_instruction_trial(timeline);
+        // create_instruction_trial(timeline);
 
         /* push post instruction trial script */
         var pits = {
@@ -352,7 +352,7 @@
         video_names = shuffle(video_names);
 
         //for testing purposes
-        // video_names = [video_names[0]];
+        video_names = [video_names[0]];
         
         // this will store the most recent video_name
         var most_recent = ["shshs"];
@@ -407,7 +407,7 @@
                     trial_ends_after_video: true, 
                     stimulus: [title],
                     prompt: '<h5> Please watch the video.</h5>',
-                    choices: [],
+                    choices: ["speed"],
                     on_finish: function(data){
                         most_recent = cmap[data.stimulus[0]]; //most recent allows me to format the sql row such that I know the context and condition of every entry
                         console.log(most_recent);
