@@ -283,7 +283,7 @@
             }
             timeline.push(it);
         }
-        // create_instruction_trial(timeline);
+        create_instruction_trial(timeline);
 
         /* push post instruction trial script */
         var pits = {
@@ -407,7 +407,7 @@
                     trial_ends_after_video: true, 
                     stimulus: [title],
                     prompt: '<h5> Please watch the video.</h5>',
-                    choices: ["speed"],
+                    choices: [],
                     on_finish: function(data){
                         most_recent = cmap[data.stimulus[0]]; //most recent allows me to format the sql row such that I know the context and condition of every entry
                         console.log(most_recent);
